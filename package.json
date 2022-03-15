@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@types/node": "^17.0.21",
+    "axios": "^0.26.1",
+    "figma-api": "^1.9.2",
+    "ora": "^6.1.0",
+    "prompt": "^1.2.2"
+  },
+  "name": "figlit",
+  "version": "1.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/rycont/figlit-fetcher",
+  "author": "rycont <rycont@outlook.kr>",
+  "license": "MIT",
+  "bin": {
+    "create-figlit": "index.js"
+  },
+  "scripts": {
+    "figlit": "ts-node ./index.ts"
+  },
+  "files": [
+    "index.js"
+  ],
+  "devDependencies": {
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2"
+  }
+}
