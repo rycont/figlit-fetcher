@@ -93,11 +93,12 @@ const CONFIG_FILE_NAME = "figlit.data.json";
         document,
         id,
         loadOra,
+        isNew: true
       };
     }
   };
 
-  const { document, workdir, id } = await ready();
+  const { document, workdir, id, isNew } = await ready();
 
   await writeFile(
     workdir + CONFIG_FILE_NAME,
@@ -136,8 +137,13 @@ const CONFIG_FILE_NAME = "figlit.data.json";
 
   downloadOra.succeed("🎉 All images downloaded!");
 
+  if(!isNew) {    
+    process.exit();
+  }
+
   console.log("\n😊 New Figlit project has been created!");
   console.log("Go into your project folder and run\n");
+  console.log("  cd [YOUR_PROJECT_NAME]");
   console.log("  yarn");
   console.log("  yarn dev\n");
   console.log("👋 Enjoy your Figlit project!\n");
