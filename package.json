@@ -3,6 +3,7 @@
     "@types/node": "^17.0.21",
     "axios": "^0.26.1",
     "figma-api": "^1.9.2",
+    "fs-extra": "^10.0.1",
     "ora": "^6.1.0",
     "prompt": "^1.2.2"
   },
@@ -16,7 +17,7 @@
     "create-figlit": "index.js"
   },
   "scripts": {
-    "figlit": "ts-node ./index.ts"
+    "update": "./index.js"
   },
   "files": [
     "index.js"

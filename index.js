@@ -2,7 +2,7 @@
 
 const { Api } = require("figma-api");
 const axios = require("axios");
-const { readFile, writeFile, mkdir } = require("fs/promises");
+const { writeFile, copy, readFile } = require("fs-extra");
 const readline = require("readline");
 
 const figma = new Api({
@@ -39,45 +39,79 @@ const getImageNodes = (node, prevIds = []) => {
   return elements.flat();
 };
 
+const CONFIG_FILE_NAME = "figlit.data.json";
+
+const ready = async () => {
+  try {
+    const config = JSON.parse(
+      await readFile(process.cwd() + CONFIG_FILE_NAME, {
+        encoding: "utf-8",
+      })
+    );
+
+    const document = await figma.getFile(config.id, {
+      geometry: "paths",
+    });
+
+    if (config.id) return {
+      workdir: process.cwd(),
+      loadMessage: "Updating your assets...",
+      document,
+      id
+    }
+
+    throw ""
+  } catch (e) {
+    console.log("\n🚀 Welcome to Figlit!\n");
+
+    const id = (await ask("Tell me your Figma Document URI: ")).split("/")[4];
+
+    const document = await figma.getFile(id, {
+      geometry: "paths",
+    });
+
+    const documentName = await ask(
+      `What is your project name? (default: ${document.name}): `
+    );
+    const workdir = `${process.cwd()}/${documentName}/`;
+
+    await copy(__dirname + "/boilerplate", `${workdir}`);
+
+    return {
+      workdir,
+      loadMessage: `Loading your Figma document...`,
+      document,
+      id
+    }
+  }
+};
+
 (async () => {
   const ora = (await import("ora")).default;
-  console.log("\n\n🚀 Welcome to Figlit!\n");
 
-  const URI = (await ask("Tell me your Figma Document URI: ")).split("/")[4];
-  const loadOra = ora("Loading your document...").start();
+  const { document, workdir, loadMessage, id } = await ready();
 
-  const figmaDocumnet = await figma.getFile(URI, {
-    geometry: "paths",
-  });
+  const loadOra = ora(loadMessage).start();
 
-  loadOra.succeed("👍 Document loaded!\n");
-
-  const documentName = await ask(
-    `What is your project name? (default: ${figmaDocumnet.name}): `
-  );
-  const WORKDIR = `${process.cwd()}/${documentName}/`;
-
-  await mkdir(WORKDIR);
-
-  console.log(`📂 Working directory: ${WORKDIR}\n`);
+  loadOra.succeed("👍 Document loaded!");
 
   await writeFile(
-    WORKDIR + "figlit.data.json",
+    workdir + CONFIG_FILE_NAME,
     JSON.stringify({
-      document: figmaDocumnet,
-      id: URI,
+      document: document,
+      id
     })
   );
 
-  const imageNodes = getImageNodes(figmaDocumnet.document);
-
-  const downloadOra = ora("Downloading your images...").start();
+  const imageNodes = getImageNodes(document.document);
+  const downloadOra = ora("Downloading your Assets...").start();
 
   let downloaded = 0;
+
   await Promise.all(
-    imageNodes.map(async (current, index) => {
+    imageNodes.map(async (current) => {
       const imageUrl = (
-        await figma.getImage(URI, {
+        await figma.getImage(id, {
           ids: current,
           format: "svg",
           scale: 1,
@@ -85,13 +119,13 @@ const getImageNodes = (node, prevIds = []) => {
       ).images[current];
       if (!imageUrl) return;
       const content = (await axios(imageUrl)).data;
-      await writeFile(WORKDIR + encodeURIComponent(current) + ".svg", content);
+      await writeFile(workdir + "figlit-asasets/" + encodeURIComponent(current) + ".svg", content);
 
-      downloadOra.text = `Downloading your images... ${++downloaded}/${imageNodes.length}`;
+      downloadOra.text = `Downloading your images... ${++downloaded}/${imageNodes.length
+        }`;
     })
   );
-  downloadOra.succeed("🎉 All images downloaded!");
 
-  
+  downloadOra.succeed("🎉 All images downloaded!");
   process.exit()
 })();
