@@ -16,7 +16,10 @@ const rl = readline.createInterface({
 
 const ask = (message) =>
   new Promise((resolve) => {
-    rl.question(message, (answer) => resolve(answer));
+    rl.question("\n" + message + "\n> ", (answer) => {
+      resolve(answer);
+      console.log()
+    });
   });
 
 const parseName = (name) => {
@@ -41,65 +44,66 @@ const getImageNodes = (node, prevIds = []) => {
 
 const CONFIG_FILE_NAME = "figlit.data.json";
 
-const ready = async () => {
-  try {
-    const config = JSON.parse(
-      await readFile(process.cwd() + CONFIG_FILE_NAME, {
-        encoding: "utf-8",
-      })
-    );
-
-    const document = await figma.getFile(config.id, {
-      geometry: "paths",
-    });
-
-    if (config.id) return {
-      workdir: process.cwd(),
-      loadMessage: "Updating your assets...",
-      document,
-      id
-    }
-
-    throw ""
-  } catch (e) {
-    console.log("\n🚀 Welcome to Figlit!\n");
-
-    const id = (await ask("Tell me your Figma Document URI: ")).split("/")[4];
-
-    const document = await figma.getFile(id, {
-      geometry: "paths",
-    });
-
-    const documentName = await ask(
-      `What is your project name? (default: ${document.name}): `
-    );
-    const workdir = `${process.cwd()}/${documentName}/`;
-
-    await copy(__dirname + "/boilerplate", `${workdir}`);
-
-    return {
-      workdir,
-      loadMessage: `Loading your Figma document...`,
-      document,
-      id
-    }
-  }
-};
-
 (async () => {
   const ora = (await import("ora")).default;
 
-  const { document, workdir, loadMessage, id } = await ready();
+  const ready = async () => {
+    try {
+      const config = JSON.parse(
+        await readFile(process.cwd() + CONFIG_FILE_NAME, {
+          encoding: "utf-8",
+        })
+      );
 
-  const loadOra = ora(loadMessage).start();
+      const loadOra = ora("Fetching your FIgma Document").start();
+      const document = await figma.getFile(config.id, {
+        geometry: "paths",
+      });
+      loadOra.succeed("👍 Document loaded!");
 
-  loadOra.succeed("👍 Document loaded!");
+      if (config.id)
+        return {
+          workdir: process.cwd(),
+          document,
+          id,
+          loadOra,
+        };
+
+      throw "";
+    } catch (e) {
+      console.log("\n🚀 Welcome to Figlit!");
+
+      const id = (await ask("Tell me your Figma Document URI")).split("/")[4];
+
+      const loadOra = ora("Fetching your Document").start();
+      const document = await figma.getFile(id, {
+        geometry: "paths",
+      });
+      loadOra.succeed("👍 Document loaded!");
+
+      const documentName = await ask(
+        `What is your project name? (default: ${document.name})`
+      );
+      const workdir = `${process.cwd()}/${documentName}/`;
+
+      await copy(__dirname + "/boilerplate", `${workdir}`);
+
+      return {
+        workdir,
+        document,
+        id,
+        loadOra,
+      };
+    }
+  };
+
+  const { document, workdir, id } = await ready();
 
   await writeFile(
     workdir + CONFIG_FILE_NAME,
     JSON.stringify({
       document: document,
-      id
+      id,
     })
   );
 
@@ -119,13 +123,23 @@ const ready = async () => {
       ).images[current];
       if (!imageUrl) return;
       const content = (await axios(imageUrl)).data;
-      await writeFile(workdir + "figlit-asasets/" + encodeURIComponent(current) + ".svg", content);
+      await writeFile(
+        workdir + "figlit-asasets/" + encodeURIComponent(current) + ".svg",
+        content
+      );
 
-      downloadOra.text = `Downloading your images... ${++downloaded}/${imageNodes.length
-        }`;
+      downloadOra.text = `Downloading your images... ${++downloaded}/${
+        imageNodes.length
+      }`;
     })
   );
 
   downloadOra.succeed("🎉 All images downloaded!");
-  process.exit()
+
+  console.log("\n😊 New Figlit project has been created!");
+  console.log("Go into your project folder and run\n");
+  console.log("  yarn");
+  console.log("  yarn dev\n");
+  console.log("👋 Enjoy your Figlit project!\n");
+  process.exit();
 })();
