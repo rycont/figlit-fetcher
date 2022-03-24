@@ -2,7 +2,7 @@
 
 const { Api } = require("figma-api");
 const axios = require("axios");
-const { writeFile, copy, readFile } = require("fs-extra");
+const { writeFile, copy, readFile, ensureDir } = require("fs-extra");
 const readline = require("readline");
 
 const figma = new Api({
@@ -113,6 +113,8 @@ const CONFIG_FILE_NAME = "figlit.data.json";
 
   let downloaded = 0;
 
+  await ensureDir(workdir + "figlit-assets/");
+
   await Promise.all(
     imageNodes.map(async (current) => {
       const imageUrl = (
@@ -124,6 +126,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       ).images[current];
       if (!imageUrl) return;
       const content = (await axios(imageUrl)).data;
+      
       await writeFile(
         workdir + "figlit-assets/" + encodeURIComponent(current) + ".svg",
         content
