@@ -16,6 +16,6 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
     "vite": "^2.8.0",
-    "figlit": "^1.0.0"
+    "create-figlit": "^1.0.0"
   }
 }
