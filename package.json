@@ -22,7 +22,7 @@
   "files": [
     "index.js",
     "boilerplate/*",
-    "boilerplate/figlit-assets/"
+    "boilerplate/figlit-assets"
   ],
   "devDependencies": {
     "ts-node": "^10.7.0",

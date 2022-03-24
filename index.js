@@ -125,7 +125,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       if (!imageUrl) return;
       const content = (await axios(imageUrl)).data;
       await writeFile(
-        workdir + "figlit-asasets/" + encodeURIComponent(current) + ".svg",
+        workdir + "figlit-assets/" + encodeURIComponent(current) + ".svg",
         content
       );
 
