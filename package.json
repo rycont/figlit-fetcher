@@ -7,7 +7,7 @@
     "ora": "^6.1.0",
     "prompt": "^1.2.2"
   },
-  "name": "figlit",
+  "name": "create-figlit",
   "version": "1.0.1",
   "main": "index.js",
   "repository": "https://github.com/rycont/figlit-fetcher",
@@ -20,7 +20,8 @@
     "update": "./index.js"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "boilerplate/*"
   ],
   "devDependencies": {
     "ts-node": "^10.7.0",
