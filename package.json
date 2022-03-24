@@ -21,7 +21,8 @@
   },
   "files": [
     "index.js",
-    "boilerplate/*"
+    "boilerplate/*",
+    "boilerplate/figlit-assets/"
   ],
   "devDependencies": {
     "ts-node": "^10.7.0",
