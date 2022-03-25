@@ -1,5 +1,5 @@
 import Renderer from "@figlit/react"
-import data from "./figlit.data.json"
+import data from "../figlit.data.json"
 
 function App() {
   return (

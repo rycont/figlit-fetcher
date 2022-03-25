@@ -18,9 +18,9 @@
   },
   "scripts": {
     "update": "./index.js",
-    "deploy:major": "npm version major; npm publish",
-    "deploy:minor": "npm version minor; npm publish",
-    "deploy:nightly": "npm version minor; npm publish --tag nightly"
+    "deploy:major": "npm version major && npm publish",
+    "deploy:minor": "npm version minor && npm publish",
+    "deploy:nightly": "npm version minor && npm publish --tag nightly"
   },
   "files": [
     "index.js",
