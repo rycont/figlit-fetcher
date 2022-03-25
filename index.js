@@ -18,7 +18,7 @@ const ask = (message) =>
   new Promise((resolve) => {
     rl.question("\n" + message + "\n> ", (answer) => {
       resolve(answer);
-      console.log()
+      console.log();
     });
   });
 
@@ -61,18 +61,16 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       });
       loadOra.succeed("👍 Document updated!");
 
-      console.log(config)
       if (config.id)
         return {
           workdir: process.cwd() + "/",
           document,
-          id,
+          id: config.id,
           loadOra,
         };
-
-      throw "";
+      else throw "";
     } catch (e) {
-      console.log("\n🚀 Welcome to Figlit!");
+      console.log("\n🚀 Welcome to Figlit!", e);
 
       const id = (await ask("Tell me your Figma Document URI")).split("/")[4];
 
@@ -94,7 +92,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
         document,
         id,
         loadOra,
-        isNew: true
+        isNew: true,
       };
     }
   };
@@ -127,7 +125,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       ).images[current];
       if (!imageUrl) return;
       const content = (await axios(imageUrl)).data;
-      
+
       await writeFile(
         workdir + "figlit-assets/" + encodeURIComponent(current) + ".svg",
         content
@@ -141,7 +139,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
 
   downloadOra.succeed("🎉 All images downloaded!");
 
-  if(!isNew) {    
+  if (!isNew) {
     process.exit();
   }
 
