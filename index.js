@@ -50,7 +50,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
   const ready = async () => {
     try {
       const config = JSON.parse(
-        await readFile(process.cwd() + CONFIG_FILE_NAME, {
+        await readFile(process.cwd() + "/" + CONFIG_FILE_NAME, {
           encoding: "utf-8",
         })
       );
@@ -59,7 +59,7 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       const document = await figma.getFile(config.id, {
         geometry: "paths",
       });
-      loadOra.succeed("👍 Document loaded!");
+      loadOra.succeed("👍 Document updated!");
 
       if (config.id)
         return {

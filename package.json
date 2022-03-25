@@ -17,7 +17,6 @@
     "create-figlit": "index.js"
   },
   "scripts": {
-    "update": "./index.js",
     "deploy:major": "npm version major && npm publish",
     "deploy:minor": "npm version minor && npm publish"
   },
