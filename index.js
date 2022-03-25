@@ -61,9 +61,10 @@ const CONFIG_FILE_NAME = "figlit.data.json";
       });
       loadOra.succeed("👍 Document updated!");
 
+      console.log(config)
       if (config.id)
         return {
-          workdir: process.cwd(),
+          workdir: process.cwd() + "/",
           document,
           id,
           loadOra,
