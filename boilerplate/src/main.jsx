@@ -8,7 +8,7 @@ import "./style.css";
 
 ReactDOM.render(
   <React.StrictMode>
-    <RecoilRoot override>
+    <RecoilRoot>
       <RecoilNexus />
       <App />
     </RecoilRoot>
